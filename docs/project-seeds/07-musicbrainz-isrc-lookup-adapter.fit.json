@@ -1,0 +1,123 @@
+{
+  "adapterId": "musicbrainz-isrc-lookup",
+  "controllerType": "SongMetadata",
+  "label": "MusicBrainz ISRC Lookup",
+  "priority": "P1",
+  "researchStatus": "researched",
+  "summary": [
+    "MusicBrainz ISRC-capable recording lookup is one of the strongest provider-neutral SongMetadata fallbacks because it can return recording duration without provider-specific credentials.",
+    "The open API plus maintained JavaScript client ecosystem make this a practical implementation lane, not just a theoretical fallback.",
+    "Its real role should be default fallback, not first-choice enrichment, because provider-matched adapters should still get first shot at canonical duration truth."
+  ],
+  "candidateClass": {
+    "primary": "open metadata fallback adapter",
+    "traits": [
+      "provider-neutral",
+      "ISRC-capable",
+      "no auth required",
+      "useful default fallback"
+    ]
+  },
+  "upstreamSnapshot": {
+    "sources": [
+      {
+        "label": "MusicBrainz API docs",
+        "url": "https://musicbrainz.org/doc/MusicBrainz_API"
+      },
+      {
+        "label": "MusicBrainz Search docs",
+        "url": "https://musicbrainz.org/doc/MusicBrainz_API/Search"
+      },
+      {
+        "label": "GitHub: musicbrainz-api",
+        "url": "https://github.com/Borewit/musicbrainz-api"
+      },
+      {
+        "label": "Provider evidence note",
+        "url": "C:/Users/koren/src/Sinq2/axolync-songmetadata-plugin/providers/musicbrainz-isrc-lookup/README.md"
+      }
+    ],
+    "signals": [
+      "MusicBrainz supports recording search by ISRC.",
+      "Recording metadata includes length/duration information.",
+      "musicbrainz-api is a maintained JavaScript client with throttling and browser-noted compatibility."
+    ]
+  },
+  "licensing": {
+    "summary": {
+      "status": "permissive-oss",
+      "display": "MIT + open MusicBrainz service",
+      "notes": [
+        "The JS client is MIT licensed and the underlying MusicBrainz service is open, though API etiquette and rate discipline still matter."
+      ]
+    },
+    "entries": [
+      {
+        "subject": "Borewit/musicbrainz-api",
+        "status": "permissive-oss",
+        "licenseExpression": "MIT",
+        "evidence": [
+          {
+            "label": "GitHub: musicbrainz-api",
+            "url": "https://github.com/Borewit/musicbrainz-api"
+          }
+        ],
+        "notes": [
+          "Maintained JavaScript client with throttling and MusicBrainz-specific client etiquette support."
+        ]
+      },
+      {
+        "subject": "MusicBrainz API",
+        "status": "service-gated",
+        "evidence": [
+          {
+            "label": "MusicBrainz API docs",
+            "url": "https://musicbrainz.org/doc/MusicBrainz_API"
+          }
+        ],
+        "notes": [
+          "The service is public, but adapters still need to honor User-Agent and rate-limit expectations."
+        ]
+      }
+    ]
+  },
+  "maintainability": {
+    "rating": "high",
+    "notes": [
+      "The API is open and the JS tooling is solid.",
+      "The main discipline is etiquette, throttling, and refusing over-broad fallback guesses."
+    ]
+  },
+  "methods": [
+    { "id": "local-js-webview", "fit": "DARK GREEN", "notes": "Open HTTP + no auth make this a plausible browser-local fallback when Axolync obeys MusicBrainz etiquette and rate limits." },
+    { "id": "wasm-port-packaging", "fit": "BLACK", "notes": "There is no engine to port." },
+    { "id": "webview-native-bridge", "fit": "BLACK", "notes": "A native bridge adds no obvious value to an open metadata API." },
+    { "id": "browser-extension", "fit": "DARK RED", "notes": "Possible, but weaker than ordinary JS or a shared host for this API." },
+    { "id": "userscript", "fit": "DARK RED", "notes": "Too brittle for a reusable metadata fallback." },
+    { "id": "desktop-companion", "fit": "BLACK", "notes": "Usually unnecessary for an open lookup API." },
+    { "id": "shared-python-host", "fit": "YELLOW", "notes": "Works, but the JavaScript/browser story is already strong enough." },
+    { "id": "shared-node-host", "fit": "DARK GREEN", "notes": "Strong fit when Axolync wants centralized User-Agent policy, throttling, and cache ownership." },
+    { "id": "cli-wrapper", "fit": "DARK RED", "notes": "Adds indirection without improving the core lookup quality." },
+    { "id": "ffi-native-host", "fit": "BLACK", "notes": "No native-library benefit exists here." },
+    { "id": "forced-conversion-local-js", "fit": "BLACK", "notes": "Already available through JS tooling and direct HTTP." },
+    { "id": "remote-shared-service", "fit": "YELLOW", "notes": "Possible, but overkill if the only need is an open fallback lookup." },
+    { "id": "cloud-microservice", "fit": "RED", "notes": "Operationally heavier than this open fallback needs." },
+    { "id": "platform-sdk-direct", "fit": "BLACK", "notes": "No platform SDK story exists here." }
+  ],
+  "recommendation": {
+    "rankedMethodIds": [
+      "local-js-webview",
+      "shared-node-host",
+      "remote-shared-service"
+    ],
+    "notes": [
+      "This is one of the best provider-neutral SongMetadata fallbacks because it can work without credentials and still return real duration metadata.",
+      "It should only run after provider-matched adapters fail to satisfy canonicalDurationMs."
+    ]
+  },
+  "openQuestions": [
+    "Should MusicBrainz fallback be disabled by default until provider-affine enrichers fail, or always allowed in best-effort profiles?",
+    "Do we want browser-local MusicBrainz calls, or should a shared host own User-Agent compliance and throttling from the start?"
+  ]
+}
+

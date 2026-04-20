@@ -1,0 +1,122 @@
+{
+  "adapterId": "spotify-track-api",
+  "controllerType": "SongMetadata",
+  "label": "Spotify Track API",
+  "priority": "P1",
+  "researchStatus": "researched",
+  "summary": [
+    "Spotify's official track endpoint is the strongest Spotify-backed SongMetadata duration candidate because the track object exposes duration_ms directly.",
+    "The same track object also exposes external_ids such as ISRC, which makes this lane useful both for direct duration retrieval and for future cross-provider fallback logic.",
+    "The real complexity is not data quality but auth ownership, which makes shared-host or brokered implementations cleaner than treating this as a casual browser-local call."
+  ],
+  "candidateClass": {
+    "primary": "authenticated catalog metadata adapter",
+    "traits": [
+      "spotify-backed",
+      "track-id first",
+      "duration-capable",
+      "requires auth"
+    ]
+  },
+  "upstreamSnapshot": {
+    "sources": [
+      {
+        "label": "Spotify Get Track docs",
+        "url": "https://developer.spotify.com/documentation/web-api/reference/get-track"
+      },
+      {
+        "label": "GitHub: Spotify Web API TS SDK",
+        "url": "https://github.com/spotify/spotify-web-api-ts-sdk"
+      },
+      {
+        "label": "GitHub: spotify-web-api-node",
+        "url": "https://github.com/thelinmichael/spotify-web-api-node"
+      },
+      {
+        "label": "Provider evidence note",
+        "url": "C:/Users/koren/src/Sinq2/axolync-songmetadata-plugin/providers/spotify-track-api/README.md"
+      }
+    ],
+    "signals": [
+      "Spotify's track object documents duration_ms directly.",
+      "The track object also exposes external_ids.isrc, which increases downstream enrichment value.",
+      "Both official and community JavaScript SDK families exist, so host-runtime implementation evidence is strong."
+    ]
+  },
+  "licensing": {
+    "summary": {
+      "status": "service-gated",
+      "display": "Spotify service terms",
+      "notes": [
+        "The decisive dependency is Spotify's hosted Web API and platform policy, even though strong OSS SDKs exist."
+      ]
+    },
+    "entries": [
+      {
+        "subject": "Spotify Get Track API",
+        "status": "service-gated",
+        "evidence": [
+          {
+            "label": "Spotify Get Track docs",
+            "url": "https://developer.spotify.com/documentation/web-api/reference/get-track"
+          }
+        ],
+        "notes": [
+          "The adapter depends on Spotify Web API access and Spotify platform rules."
+        ]
+      },
+      {
+        "subject": "spotify/spotify-web-api-ts-sdk",
+        "status": "permissive-oss",
+        "licenseExpression": "Apache-2.0",
+        "evidence": [
+          {
+            "label": "GitHub: Spotify Web API TS SDK",
+            "url": "https://github.com/spotify/spotify-web-api-ts-sdk"
+          }
+        ],
+        "notes": [
+          "Official SDK evidence exists for a typed JavaScript/TypeScript integration path."
+        ]
+      }
+    ]
+  },
+  "maintainability": {
+    "rating": "medium",
+    "notes": [
+      "Official API quality and strong JS tooling help.",
+      "The main burden is auth policy, not metadata semantics."
+    ]
+  },
+  "methods": [
+    { "id": "local-js-webview", "fit": "YELLOW", "notes": "Technically possible with PKCE or user auth, but auth ownership is the real challenge." },
+    { "id": "wasm-port-packaging", "fit": "BLACK", "notes": "There is no engine to port." },
+    { "id": "webview-native-bridge", "fit": "RED", "notes": "A native bridge is not the natural fit for a hosted metadata API unless it already owns credentials." },
+    { "id": "browser-extension", "fit": "RED", "notes": "Possible, but awkward compared with host-owned tokens." },
+    { "id": "userscript", "fit": "BLACK", "notes": "Too brittle for an authenticated provider integration." },
+    { "id": "desktop-companion", "fit": "YELLOW", "notes": "Can own credentials, but adds another moving part when a shared host could do the same." },
+    { "id": "shared-python-host", "fit": "YELLOW", "notes": "Works, but Node/TypeScript has the cleaner ecosystem evidence here." },
+    { "id": "shared-node-host", "fit": "BRIGHT GREEN", "notes": "Strongest fit: official TypeScript SDK, direct track-id lookup, clean token ownership, easy caching." },
+    { "id": "cli-wrapper", "fit": "DARK RED", "notes": "A CLI shell around the Spotify API is weaker than a proper host runtime." },
+    { "id": "ffi-native-host", "fit": "BLACK", "notes": "No native-library advantage exists here." },
+    { "id": "forced-conversion-local-js", "fit": "BLACK", "notes": "There is nothing to convert." },
+    { "id": "remote-shared-service", "fit": "DARK GREEN", "notes": "A shared metadata broker can own Spotify auth and centralize caching." },
+    { "id": "cloud-microservice", "fit": "YELLOW", "notes": "Viable, but more operational cost than the stage-1 problem needs." },
+    { "id": "platform-sdk-direct", "fit": "BLACK", "notes": "This candidate is about the Spotify Web API, not a platform SDK." }
+  ],
+  "recommendation": {
+    "rankedMethodIds": [
+      "shared-node-host",
+      "remote-shared-service",
+      "local-js-webview"
+    ],
+    "notes": [
+      "This is the strongest Spotify-backed SongMetadata candidate when a direct Spotify track id is preserved.",
+      "It should outrank Spotify search and scraper-style fallbacks."
+    ]
+  },
+  "openQuestions": [
+    "Will accepted SongSense matches preserve Spotify track ids directly enough to make this a realistic first Spotify implementation?",
+    "Does Axolync want Spotify auth to live in a shared host first, or is browser-side PKCE acceptable for SongMetadata in some profiles?"
+  ]
+}

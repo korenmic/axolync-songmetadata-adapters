@@ -1,0 +1,118 @@
+{
+  "adapterId": "spotify-url-info",
+  "controllerType": "SongMetadata",
+  "label": "Spotify URL Info",
+  "priority": "P2",
+  "researchStatus": "researched",
+  "summary": [
+    "spotify-url-info is a real SongMetadata candidate because it can extract Spotify-like metadata from URLs without first solving Spotify auth.",
+    "That makes it valuable as an atlas row: it represents the practical low-friction fallback class, not the official high-trust class.",
+    "The tradeoff is contractual and operational trust, so it should remain below Spotify's official Web API lanes in both priority and recommendation strength."
+  ],
+  "candidateClass": {
+    "primary": "scrape-assisted metadata adapter",
+    "traits": [
+      "spotify-backed",
+      "url-driven",
+      "no-auth",
+      "lower contractual trust"
+    ]
+  },
+  "upstreamSnapshot": {
+    "sources": [
+      {
+        "label": "GitHub: spotify-url-info",
+        "url": "https://github.com/microlinkhq/spotify-url-info"
+      },
+      {
+        "label": "Spotify Get Track docs for shape comparison",
+        "url": "https://developer.spotify.com/documentation/web-api/reference/get-track"
+      },
+      {
+        "label": "Provider evidence note",
+        "url": "C:/Users/koren/src/Sinq2/axolync-songmetadata-plugin/providers/spotify-url-info/README.md"
+      }
+    ],
+    "signals": [
+      "spotify-url-info is an MIT JavaScript package that works from a caller-provided fetch agent.",
+      "The README says its output resembles Spotify API data, which is useful for a SongMetadata adapter that only needs canonical duration.",
+      "This remains a scrape-style lane rather than the official Spotify platform contract."
+    ]
+  },
+  "licensing": {
+    "summary": {
+      "status": "service-gated",
+      "display": "MIT + Spotify service behavior",
+      "notes": [
+        "The helper package is MIT, but the real data source and contractual risk still come from Spotify."
+      ]
+    },
+    "entries": [
+      {
+        "subject": "microlinkhq/spotify-url-info",
+        "status": "permissive-oss",
+        "licenseExpression": "MIT",
+        "evidence": [
+          {
+            "label": "GitHub: spotify-url-info",
+            "url": "https://github.com/microlinkhq/spotify-url-info"
+          }
+        ],
+        "notes": [
+          "The implementation helper is open-source and lightweight."
+        ]
+      },
+      {
+        "subject": "Spotify data surface",
+        "status": "service-gated",
+        "evidence": [
+          {
+            "label": "Spotify Get Track docs for shape comparison",
+            "url": "https://developer.spotify.com/documentation/web-api/reference/get-track"
+          }
+        ],
+        "notes": [
+          "Even when the helper is OSS, the practical durability and policy risk still derive from Spotify's hosted service behavior."
+        ]
+      }
+    ]
+  },
+  "maintainability": {
+    "rating": "low",
+    "notes": [
+      "Runtime integration is easy because the helper is already JS + fetch based.",
+      "The real risk is that this is not the official Spotify contract and may prove brittle over time."
+    ]
+  },
+  "methods": [
+    { "id": "local-js-webview", "fit": "DARK GREEN", "notes": "This is one of the few Spotify candidates that is naturally browser-friendly because it is already JS + fetch based and avoids auth." },
+    { "id": "wasm-port-packaging", "fit": "BLACK", "notes": "No engine to port." },
+    { "id": "webview-native-bridge", "fit": "BLACK", "notes": "A native bridge adds no obvious value to a JS fetch-based metadata helper." },
+    { "id": "browser-extension", "fit": "YELLOW", "notes": "A browser extension can host scrape-style fallbacks cleanly, but it is still weaker than ordinary local JS here." },
+    { "id": "userscript", "fit": "YELLOW", "notes": "Technically plausible because the candidate is URL/web driven, but still too brittle for a first-class product lane." },
+    { "id": "desktop-companion", "fit": "RED", "notes": "A companion app is usually unnecessary for a URL-driven JS metadata helper." },
+    { "id": "shared-python-host", "fit": "BLACK", "notes": "Wrong ecosystem fit." },
+    { "id": "shared-node-host", "fit": "YELLOW", "notes": "Works if Axolync wants centralized caching, but the main value of this candidate is easy local JS usage." },
+    { "id": "cli-wrapper", "fit": "DARK RED", "notes": "A CLI shell adds indirection without improving trust." },
+    { "id": "ffi-native-host", "fit": "BLACK", "notes": "No native-library angle exists here." },
+    { "id": "forced-conversion-local-js", "fit": "BLACK", "notes": "Already JavaScript." },
+    { "id": "remote-shared-service", "fit": "YELLOW", "notes": "Possible for centralized scrape policy, but then Axolync inherits service ownership for a weaker trust lane." },
+    { "id": "cloud-microservice", "fit": "RED", "notes": "Operationally heavy for a scrape-style fallback." },
+    { "id": "platform-sdk-direct", "fit": "BLACK", "notes": "No platform SDK story exists here." }
+  ],
+  "recommendation": {
+    "rankedMethodIds": [
+      "local-js-webview",
+      "browser-extension",
+      "shared-node-host"
+    ],
+    "notes": [
+      "This is a useful atlas row because it shows a real no-auth Spotify option, but it should remain below the official Spotify API lanes.",
+      "Use it only when Axolync explicitly accepts the lower trust and brittleness of scrape-style metadata helpers."
+    ]
+  },
+  "openQuestions": [
+    "Is a scrape-style Spotify fallback acceptable at all under Axolync's product and policy principles?",
+    "Would this candidate be allowed only in debug / experimental profiles, or is there a real release-grade case for it?"
+  ]
+}

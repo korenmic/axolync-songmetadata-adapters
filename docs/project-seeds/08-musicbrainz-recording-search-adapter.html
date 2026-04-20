@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MusicBrainz Recording Search Adapter</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; margin: 24px; color: #e6edf7; background: #121722; }
+    main { max-width: 1100px; margin: 0 auto; }
+    section { margin: 0 0 24px; padding: 18px 20px; border: 1px solid #2a3448; border-radius: 16px; background: #182133; }
+    h1, h2, h3 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #2a3448; }
+    th { background: #22304b; }
+    code { background: #22304b; padding: 0 4px; border-radius: 6px; }
+    .sort-button { width: 100%; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+    .fit-chip { display: inline-block; min-width: 9ch; padding: 4px 8px; border-radius: 999px; font-weight: 600; }
+    .fit-black { background: #101114; color: #f5f7fb; }
+    .fit-dark-red { background: #4b1010; color: #ffd8d8; }
+    .fit-red { background: #7b1e1e; color: #ffe8e8; }
+    .fit-yellow { background: #7f6413; color: #fff7d1; }
+    .fit-dark-green { background: #1e5f3a; color: #ddffe9; }
+    .fit-bright-green { background: #1aa152; color: #f3fff8; }
+  </style>
+</head>
+<body>
+  <main>
+    <section>
+      <h1>MusicBrainz Recording Search Adapter</h1>
+      <p>MusicBrainz recording search is the broadest provider-neutral SongMetadata fallback because it can search by artist/title and still return recording length.</p><p>That also makes it the most ambiguity-prone candidate in this repo, so its value is resilience rather than first-choice authority.</p><p>It deserves a real atlas row because the open API and JS tooling are strong, but it should sit behind provider-affine enrichers and behind MusicBrainz ISRC lookup.</p>
+      <p><strong>Priority:</strong> <code>P2</code></p>
+      <p><strong>Research status:</strong> <code>researched</code></p>
+    </section>
+    <section>
+      <h2>Candidate Class</h2>
+      <p><strong>Primary class:</strong> <code>open metadata search fallback adapter</code></p>
+      <ul><li>provider-neutral</li><li>artist-title search</li><li>no auth required</li><li>lower trust than identifier lookups</li></ul>
+    </section>
+    <section>
+      <h2>Upstream Snapshot</h2>
+      <h3>Sources</h3>
+      <ul><li><strong>MusicBrainz Search docs:</strong> https://musicbrainz.org/doc/MusicBrainz_API/Search</li><li><strong>MusicBrainz Recording docs:</strong> https://musicbrainz.org/doc/Recording</li><li><strong>GitHub: musicbrainz-api:</strong> https://github.com/Borewit/musicbrainz-api</li><li><strong>Provider evidence note:</strong> C:/Users/koren/src/Sinq2/axolync-songmetadata-plugin/providers/musicbrainz-recording-search/README.md</li></ul>
+      <h3>Research Signals</h3>
+      <ul><li>MusicBrainz recording search supports artist/artistname/recording fields.</li><li>Recording length is a first-class property in MusicBrainz.</li><li>This is useful for fallback resilience, but clearly weaker than identifier-driven lookups.</li></ul>
+    </section>
+    <section>
+      <h2>Integration Method Fit Matrix</h2>
+      <table class="sortable-method-fit-table">
+        <thead>
+          <tr>
+            <th><button type="button" class="sort-button" data-column-index="0">Method</button></th>
+            <th><button type="button" class="sort-button" data-column-index="1">Fit</button></th>
+            <th>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        <tr class="fit-dark-green">
+          <td data-sort-value="1">1. Local JS in ordinary browser/webview plugin</td>
+          <td data-sort-value="4"><span class="fit-chip fit-dark-green">DARK GREEN</span></td>
+          <td>Open HTTP and no auth make this feasible locally, but the adapter still needs strict search-result discipline.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="2">2. WASM port/packaging</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>There is no engine to port.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="3">3. Webview wrapper JS -&gt; native/plugin bridge</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>A native bridge adds no obvious value to an open search API.</td>
+        </tr>
+        <tr class="fit-dark-red">
+          <td data-sort-value="4">4. Browser extension</td>
+          <td data-sort-value="1"><span class="fit-chip fit-dark-red">DARK RED</span></td>
+          <td>Possible, but weaker than plain JS or a shared host.</td>
+        </tr>
+        <tr class="fit-dark-red">
+          <td data-sort-value="5">5. Userscript</td>
+          <td data-sort-value="1"><span class="fit-chip fit-dark-red">DARK RED</span></td>
+          <td>Too brittle for a reusable search fallback lane.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="6">6. Desktop companion</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>Usually unnecessary here.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="7">7. Shared Python adapter host</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>Fine, but not the strongest evidence path.</td>
+        </tr>
+        <tr class="fit-dark-green">
+          <td data-sort-value="8">8. Shared Node adapter host</td>
+          <td data-sort-value="4"><span class="fit-chip fit-dark-green">DARK GREEN</span></td>
+          <td>Strong place to centralize search heuristics, scoring, and cache policy.</td>
+        </tr>
+        <tr class="fit-dark-red">
+          <td data-sort-value="9">9. CLI wrapper around upstream/runtime</td>
+          <td data-sort-value="1"><span class="fit-chip fit-dark-red">DARK RED</span></td>
+          <td>Adds indirection to an already search-policy-heavy candidate.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="10">10. FFI/native library host lane</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>No native-library advantage exists here.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="11">11. Forced conversion to local JS</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>Already available through JS tooling and direct HTTP.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="12">12. Remote shared service</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>Possible when Axolync wants centralized search heuristics, but still likely heavier than needed.</td>
+        </tr>
+        <tr class="fit-red">
+          <td data-sort-value="13">13. Cloud microservice per request / per tenant</td>
+          <td data-sort-value="2"><span class="fit-chip fit-red">RED</span></td>
+          <td>Too heavy for a broad fallback search path.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="14">14. Platform SDK direct integration</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>No platform SDK story exists here.</td>
+        </tr>
+        </tbody>
+      </table>
+    </section>
+    <section>
+      <h2>Maintainability Read</h2>
+      <p><strong>Machine-readable rating:</strong> <code>medium</code></p>
+      <ul><li>The API is open and the tooling is good.</li><li>The real burden is fallback correctness and overmatching avoidance, not runtime implementation complexity.</li></ul>
+    </section>
+    <section>
+      <h2>Recommendation</h2>
+      <ol><li>8. Shared Node adapter host</li><li>1. Local JS in ordinary browser/webview plugin</li><li>12. Remote shared service</li></ol>
+      <ul><li>Keep this row visible because it is a real resilience option, but do not confuse it with a first-choice canonical-duration source.</li><li>It should run after provider-affine enrichers and after MusicBrainz ISRC lookup.</li></ul>
+    </section>
+    <section>
+      <h2>Open Questions</h2>
+      <ol><li>How strict should artist/title fallback matching be before SongMetadata refuses to return duration?</li><li>Should this path be disabled entirely in strict profiles that only allow provider-affine or identifier-based metadata enrichers?</li></ol>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const table = document.querySelector('.sortable-method-fit-table');
+      if (!table) return;
+      const tbody = table.querySelector('tbody');
+      const buttons = table.querySelectorAll('.sort-button');
+      let activeColumn = null;
+      let ascending = true;
+      const readSortValue = (row, columnIndex) => {
+        const cell = row.children[columnIndex];
+        return cell?.dataset.sortValue ?? cell?.textContent?.trim() ?? '';
+      };
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const columnIndex = Number(button.dataset.columnIndex);
+          ascending = activeColumn === columnIndex ? !ascending : true;
+          activeColumn = columnIndex;
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+          rows.sort((left, right) => {
+            const leftValue = readSortValue(left, columnIndex);
+            const rightValue = readSortValue(right, columnIndex);
+            const numericLeft = Number(leftValue);
+            const numericRight = Number(rightValue);
+            const comparable = Number.isFinite(numericLeft) && Number.isFinite(numericRight)
+              ? numericLeft - numericRight
+              : String(leftValue).localeCompare(String(rightValue));
+            return ascending ? comparable : -comparable;
+          });
+          rows.forEach((row) => tbody.appendChild(row));
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+{
+  "adapterId": "musicbrainz-recording-search",
+  "controllerType": "SongMetadata",
+  "label": "MusicBrainz Recording Search",
+  "priority": "P2",
+  "researchStatus": "researched",
+  "summary": [
+    "MusicBrainz recording search is the broadest provider-neutral SongMetadata fallback because it can search by artist/title and still return recording length.",
+    "That also makes it the most ambiguity-prone candidate in this repo, so its value is resilience rather than first-choice authority.",
+    "It deserves a real atlas row because the open API and JS tooling are strong, but it should sit behind provider-affine enrichers and behind MusicBrainz ISRC lookup."
+  ],
+  "candidateClass": {
+    "primary": "open metadata search fallback adapter",
+    "traits": [
+      "provider-neutral",
+      "artist-title search",
+      "no auth required",
+      "lower trust than identifier lookups"
+    ]
+  },
+  "upstreamSnapshot": {
+    "sources": [
+      {
+        "label": "MusicBrainz Search docs",
+        "url": "https://musicbrainz.org/doc/MusicBrainz_API/Search"
+      },
+      {
+        "label": "MusicBrainz Recording docs",
+        "url": "https://musicbrainz.org/doc/Recording"
+      },
+      {
+        "label": "GitHub: musicbrainz-api",
+        "url": "https://github.com/Borewit/musicbrainz-api"
+      },
+      {
+        "label": "Provider evidence note",
+        "url": "C:/Users/koren/src/Sinq2/axolync-songmetadata-plugin/providers/musicbrainz-recording-search/README.md"
+      }
+    ],
+    "signals": [
+      "MusicBrainz recording search supports artist/artistname/recording fields.",
+      "Recording length is a first-class property in MusicBrainz.",
+      "This is useful for fallback resilience, but clearly weaker than identifier-driven lookups."
+    ]
+  },
+  "licensing": {
+    "summary": {
+      "status": "permissive-oss",
+      "display": "MIT + open MusicBrainz service",
+      "notes": [
+        "The JS client is MIT licensed and the underlying MusicBrainz service is open, though search etiquette and overmatching control still matter."
+      ]
+    },
+    "entries": [
+      {
+        "subject": "Borewit/musicbrainz-api",
+        "status": "permissive-oss",
+        "licenseExpression": "MIT",
+        "evidence": [
+          {
+            "label": "GitHub: musicbrainz-api",
+            "url": "https://github.com/Borewit/musicbrainz-api"
+          }
+        ],
+        "notes": [
+          "Maintained JavaScript client and direct fit for host-owned or browser-owned MusicBrainz integration."
+        ]
+      },
+      {
+        "subject": "MusicBrainz Search API",
+        "status": "service-gated",
+        "evidence": [
+          {
+            "label": "MusicBrainz Search docs",
+            "url": "https://musicbrainz.org/doc/MusicBrainz_API/Search"
+          }
+        ],
+        "notes": [
+          "The service is public, but the adapter still needs search etiquette, User-Agent discipline, and bounded result selection."
+        ]
+      }
+    ]
+  },
+  "maintainability": {
+    "rating": "medium",
+    "notes": [
+      "The API is open and the tooling is good.",
+      "The real burden is fallback correctness and overmatching avoidance, not runtime implementation complexity."
+    ]
+  },
+  "methods": [
+    { "id": "local-js-webview", "fit": "DARK GREEN", "notes": "Open HTTP and no auth make this feasible locally, but the adapter still needs strict search-result discipline." },
+    { "id": "wasm-port-packaging", "fit": "BLACK", "notes": "There is no engine to port." },
+    { "id": "webview-native-bridge", "fit": "BLACK", "notes": "A native bridge adds no obvious value to an open search API." },
+    { "id": "browser-extension", "fit": "DARK RED", "notes": "Possible, but weaker than plain JS or a shared host." },
+    { "id": "userscript", "fit": "DARK RED", "notes": "Too brittle for a reusable search fallback lane." },
+    { "id": "desktop-companion", "fit": "BLACK", "notes": "Usually unnecessary here." },
+    { "id": "shared-python-host", "fit": "YELLOW", "notes": "Fine, but not the strongest evidence path." },
+    { "id": "shared-node-host", "fit": "DARK GREEN", "notes": "Strong place to centralize search heuristics, scoring, and cache policy." },
+    { "id": "cli-wrapper", "fit": "DARK RED", "notes": "Adds indirection to an already search-policy-heavy candidate." },
+    { "id": "ffi-native-host", "fit": "BLACK", "notes": "No native-library advantage exists here." },
+    { "id": "forced-conversion-local-js", "fit": "BLACK", "notes": "Already available through JS tooling and direct HTTP." },
+    { "id": "remote-shared-service", "fit": "YELLOW", "notes": "Possible when Axolync wants centralized search heuristics, but still likely heavier than needed." },
+    { "id": "cloud-microservice", "fit": "RED", "notes": "Too heavy for a broad fallback search path." },
+    { "id": "platform-sdk-direct", "fit": "BLACK", "notes": "No platform SDK story exists here." }
+  ],
+  "recommendation": {
+    "rankedMethodIds": [
+      "shared-node-host",
+      "local-js-webview",
+      "remote-shared-service"
+    ],
+    "notes": [
+      "Keep this row visible because it is a real resilience option, but do not confuse it with a first-choice canonical-duration source.",
+      "It should run after provider-affine enrichers and after MusicBrainz ISRC lookup."
+    ]
+  },
+  "openQuestions": [
+    "How strict should artist/title fallback matching be before SongMetadata refuses to return duration?",
+    "Should this path be disabled entirely in strict profiles that only allow provider-affine or identifier-based metadata enrichers?"
+  ]
+}

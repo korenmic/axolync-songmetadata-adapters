@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Spotify URL Info Adapter</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; margin: 24px; color: #e6edf7; background: #121722; }
+    main { max-width: 1100px; margin: 0 auto; }
+    section { margin: 0 0 24px; padding: 18px 20px; border: 1px solid #2a3448; border-radius: 16px; background: #182133; }
+    h1, h2, h3 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #2a3448; }
+    th { background: #22304b; }
+    code { background: #22304b; padding: 0 4px; border-radius: 6px; }
+    .sort-button { width: 100%; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+    .fit-chip { display: inline-block; min-width: 9ch; padding: 4px 8px; border-radius: 999px; font-weight: 600; }
+    .fit-black { background: #101114; color: #f5f7fb; }
+    .fit-dark-red { background: #4b1010; color: #ffd8d8; }
+    .fit-red { background: #7b1e1e; color: #ffe8e8; }
+    .fit-yellow { background: #7f6413; color: #fff7d1; }
+    .fit-dark-green { background: #1e5f3a; color: #ddffe9; }
+    .fit-bright-green { background: #1aa152; color: #f3fff8; }
+  </style>
+</head>
+<body>
+  <main>
+    <section>
+      <h1>Spotify URL Info Adapter</h1>
+      <p>spotify-url-info is a real SongMetadata candidate because it can extract Spotify-like metadata from URLs without first solving Spotify auth.</p><p>That makes it valuable as an atlas row: it represents the practical low-friction fallback class, not the official high-trust class.</p><p>The tradeoff is contractual and operational trust, so it should remain below Spotify's official Web API lanes in both priority and recommendation strength.</p>
+      <p><strong>Priority:</strong> <code>P2</code></p>
+      <p><strong>Research status:</strong> <code>researched</code></p>
+    </section>
+    <section>
+      <h2>Candidate Class</h2>
+      <p><strong>Primary class:</strong> <code>scrape-assisted metadata adapter</code></p>
+      <ul><li>spotify-backed</li><li>url-driven</li><li>no-auth</li><li>lower contractual trust</li></ul>
+    </section>
+    <section>
+      <h2>Upstream Snapshot</h2>
+      <h3>Sources</h3>
+      <ul><li><strong>GitHub: spotify-url-info:</strong> https://github.com/microlinkhq/spotify-url-info</li><li><strong>Spotify Get Track docs for shape comparison:</strong> https://developer.spotify.com/documentation/web-api/reference/get-track</li><li><strong>Provider evidence note:</strong> C:/Users/koren/src/Sinq2/axolync-songmetadata-plugin/providers/spotify-url-info/README.md</li></ul>
+      <h3>Research Signals</h3>
+      <ul><li>spotify-url-info is an MIT JavaScript package that works from a caller-provided fetch agent.</li><li>The README says its output resembles Spotify API data, which is useful for a SongMetadata adapter that only needs canonical duration.</li><li>This remains a scrape-style lane rather than the official Spotify platform contract.</li></ul>
+    </section>
+    <section>
+      <h2>Integration Method Fit Matrix</h2>
+      <table class="sortable-method-fit-table">
+        <thead>
+          <tr>
+            <th><button type="button" class="sort-button" data-column-index="0">Method</button></th>
+            <th><button type="button" class="sort-button" data-column-index="1">Fit</button></th>
+            <th>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        <tr class="fit-dark-green">
+          <td data-sort-value="1">1. Local JS in ordinary browser/webview plugin</td>
+          <td data-sort-value="4"><span class="fit-chip fit-dark-green">DARK GREEN</span></td>
+          <td>This is one of the few Spotify candidates that is naturally browser-friendly because it is already JS + fetch based and avoids auth.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="2">2. WASM port/packaging</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>No engine to port.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="3">3. Webview wrapper JS -&gt; native/plugin bridge</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>A native bridge adds no obvious value to a JS fetch-based metadata helper.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="4">4. Browser extension</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>A browser extension can host scrape-style fallbacks cleanly, but it is still weaker than ordinary local JS here.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="5">5. Userscript</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>Technically plausible because the candidate is URL/web driven, but still too brittle for a first-class product lane.</td>
+        </tr>
+        <tr class="fit-red">
+          <td data-sort-value="6">6. Desktop companion</td>
+          <td data-sort-value="2"><span class="fit-chip fit-red">RED</span></td>
+          <td>A companion app is usually unnecessary for a URL-driven JS metadata helper.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="7">7. Shared Python adapter host</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>Wrong ecosystem fit.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="8">8. Shared Node adapter host</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>Works if Axolync wants centralized caching, but the main value of this candidate is easy local JS usage.</td>
+        </tr>
+        <tr class="fit-dark-red">
+          <td data-sort-value="9">9. CLI wrapper around upstream/runtime</td>
+          <td data-sort-value="1"><span class="fit-chip fit-dark-red">DARK RED</span></td>
+          <td>A CLI shell adds indirection without improving trust.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="10">10. FFI/native library host lane</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>No native-library angle exists here.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="11">11. Forced conversion to local JS</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>Already JavaScript.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="12">12. Remote shared service</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>Possible for centralized scrape policy, but then Axolync inherits service ownership for a weaker trust lane.</td>
+        </tr>
+        <tr class="fit-red">
+          <td data-sort-value="13">13. Cloud microservice per request / per tenant</td>
+          <td data-sort-value="2"><span class="fit-chip fit-red">RED</span></td>
+          <td>Operationally heavy for a scrape-style fallback.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="14">14. Platform SDK direct integration</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>No platform SDK story exists here.</td>
+        </tr>
+        </tbody>
+      </table>
+    </section>
+    <section>
+      <h2>Maintainability Read</h2>
+      <p><strong>Machine-readable rating:</strong> <code>low</code></p>
+      <ul><li>Runtime integration is easy because the helper is already JS + fetch based.</li><li>The real risk is that this is not the official Spotify contract and may prove brittle over time.</li></ul>
+    </section>
+    <section>
+      <h2>Recommendation</h2>
+      <ol><li>1. Local JS in ordinary browser/webview plugin</li><li>4. Browser extension</li><li>8. Shared Node adapter host</li></ol>
+      <ul><li>This is a useful atlas row because it shows a real no-auth Spotify option, but it should remain below the official Spotify API lanes.</li><li>Use it only when Axolync explicitly accepts the lower trust and brittleness of scrape-style metadata helpers.</li></ul>
+    </section>
+    <section>
+      <h2>Open Questions</h2>
+      <ol><li>Is a scrape-style Spotify fallback acceptable at all under Axolync's product and policy principles?</li><li>Would this candidate be allowed only in debug / experimental profiles, or is there a real release-grade case for it?</li></ol>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const table = document.querySelector('.sortable-method-fit-table');
+      if (!table) return;
+      const tbody = table.querySelector('tbody');
+      const buttons = table.querySelectorAll('.sort-button');
+      let activeColumn = null;
+      let ascending = true;
+      const readSortValue = (row, columnIndex) => {
+        const cell = row.children[columnIndex];
+        return cell?.dataset.sortValue ?? cell?.textContent?.trim() ?? '';
+      };
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const columnIndex = Number(button.dataset.columnIndex);
+          ascending = activeColumn === columnIndex ? !ascending : true;
+          activeColumn = columnIndex;
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+          rows.sort((left, right) => {
+            const leftValue = readSortValue(left, columnIndex);
+            const rightValue = readSortValue(right, columnIndex);
+            const numericLeft = Number(leftValue);
+            const numericRight = Number(rightValue);
+            const comparable = Number.isFinite(numericLeft) && Number.isFinite(numericRight)
+              ? numericLeft - numericRight
+              : String(leftValue).localeCompare(String(rightValue));
+            return ascending ? comparable : -comparable;
+          });
+          rows.forEach((row) => tbody.appendChild(row));
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

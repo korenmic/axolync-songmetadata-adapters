@@ -1,0 +1,123 @@
+{
+  "adapterId": "spotify-search-api",
+  "controllerType": "SongMetadata",
+  "label": "Spotify Search API",
+  "priority": "P2",
+  "researchStatus": "researched",
+  "summary": [
+    "Spotify search is a legitimate SongMetadata fallback because the official endpoint supports structured filters including artist, track, and isrc.",
+    "It is still clearly weaker than direct Spotify track-id lookup because search ambiguity now becomes part of the adapter's correctness burden.",
+    "So this row should remain visible as a real candidate, but it should sit below direct-id enrichment in both product trust and implementation order."
+  ],
+  "candidateClass": {
+    "primary": "authenticated search metadata adapter",
+    "traits": [
+      "spotify-backed",
+      "search-based",
+      "duration-capable",
+      "requires auth"
+    ]
+  },
+  "upstreamSnapshot": {
+    "sources": [
+      {
+        "label": "Spotify Search docs",
+        "url": "https://developer.spotify.com/documentation/web-api/reference/search"
+      },
+      {
+        "label": "GitHub: Spotify Web API TS SDK",
+        "url": "https://github.com/spotify/spotify-web-api-ts-sdk"
+      },
+      {
+        "label": "GitHub: spotify-web-api-node",
+        "url": "https://github.com/thelinmichael/spotify-web-api-node"
+      },
+      {
+        "label": "Provider evidence note",
+        "url": "C:/Users/koren/src/Sinq2/axolync-songmetadata-plugin/providers/spotify-search-api/README.md"
+      }
+    ],
+    "signals": [
+      "Spotify search supports field filters including artist, track, and isrc.",
+      "Healthy JS SDK families exist, so implementation mechanics are not the blocker.",
+      "The real product risk is search ambiguity rather than raw API capability."
+    ]
+  },
+  "licensing": {
+    "summary": {
+      "status": "service-gated",
+      "display": "Spotify service terms",
+      "notes": [
+        "The adapter depends on Spotify's hosted Web API and platform rules."
+      ]
+    },
+    "entries": [
+      {
+        "subject": "Spotify Search API",
+        "status": "service-gated",
+        "evidence": [
+          {
+            "label": "Spotify Search docs",
+            "url": "https://developer.spotify.com/documentation/web-api/reference/search"
+          }
+        ],
+        "notes": [
+          "The adapter depends on Spotify Web API access and Spotify platform policy."
+        ]
+      },
+      {
+        "subject": "spotify/spotify-web-api-ts-sdk",
+        "status": "permissive-oss",
+        "licenseExpression": "Apache-2.0",
+        "evidence": [
+          {
+            "label": "GitHub: Spotify Web API TS SDK",
+            "url": "https://github.com/spotify/spotify-web-api-ts-sdk"
+          }
+        ],
+        "notes": [
+          "Official SDK evidence exists for a typed implementation path."
+        ]
+      }
+    ]
+  },
+  "maintainability": {
+    "rating": "medium",
+    "notes": [
+      "The API and JS ecosystem are strong.",
+      "Search-policy correctness and ambiguity handling are the real maintenance cost."
+    ]
+  },
+  "methods": [
+    { "id": "local-js-webview", "fit": "YELLOW", "notes": "Feasible, but auth plus search-result ambiguity keep this from being a clean browser-first recommendation." },
+    { "id": "wasm-port-packaging", "fit": "BLACK", "notes": "There is no engine to port." },
+    { "id": "webview-native-bridge", "fit": "RED", "notes": "A native bridge is unnecessary for a search-only metadata API unless it already owns credentials." },
+    { "id": "browser-extension", "fit": "DARK RED", "notes": "Possible, but not a natural fit for a search-auth problem." },
+    { "id": "userscript", "fit": "BLACK", "notes": "Too brittle for an authenticated provider search lane." },
+    { "id": "desktop-companion", "fit": "YELLOW", "notes": "A companion can own credentials, but a shared host is still cleaner." },
+    { "id": "shared-python-host", "fit": "YELLOW", "notes": "Technically fine, but Node/TypeScript still has the cleaner evidence here." },
+    { "id": "shared-node-host", "fit": "DARK GREEN", "notes": "Best immediate fit: structured query construction, result filtering, and auth ownership all sit comfortably here." },
+    { "id": "cli-wrapper", "fit": "DARK RED", "notes": "Adds indirection to an already ambiguous search path." },
+    { "id": "ffi-native-host", "fit": "BLACK", "notes": "No native-library advantage exists here." },
+    { "id": "forced-conversion-local-js", "fit": "BLACK", "notes": "Not a conversion problem." },
+    { "id": "remote-shared-service", "fit": "DARK GREEN", "notes": "A shared broker is a good place to centralize search-policy heuristics and caching." },
+    { "id": "cloud-microservice", "fit": "YELLOW", "notes": "Viable, but heavier than the current product need." },
+    { "id": "platform-sdk-direct", "fit": "BLACK", "notes": "This is a web API search path, not a platform SDK story." }
+  ],
+  "recommendation": {
+    "rankedMethodIds": [
+      "shared-node-host",
+      "remote-shared-service",
+      "local-js-webview"
+    ],
+    "notes": [
+      "This is a legitimate fallback only after direct Spotify id lookup is unavailable.",
+      "Keep it bounded by provider affinity and strict winner selection."
+    ]
+  },
+  "openQuestions": [
+    "How much search ambiguity is acceptable before SongMetadata should refuse to enrich instead of guessing?",
+    "Should Spotify search be allowed to use ISRC filters first when that field is present, before trying artist/title text?"
+  ]
+}
+

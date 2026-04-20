@@ -1,0 +1,118 @@
+{
+  "adapterId": "apple-music-catalog-isrc",
+  "controllerType": "SongMetadata",
+  "label": "Apple Music Catalog by ISRC",
+  "priority": "P1",
+  "researchStatus": "researched",
+  "summary": [
+    "Apple explicitly documents catalog song fetch by ISRC, which makes this a strong Apple-backed SongMetadata fallback when accepted matches preserve recording identity but not a direct Apple song id.",
+    "The official response includes durationInMillis, so the metadata itself is high-quality once a trustworthy ISRC is available.",
+    "The real nuance is arbitration: Apple notes that one ISRC may return more than one song, so this lane still needs bounded provider-aware result selection."
+  ],
+  "candidateClass": {
+    "primary": "authenticated identifier fallback adapter",
+    "traits": [
+      "apple-backed",
+      "ISRC-capable",
+      "high-trust duration",
+      "requires developer token"
+    ]
+  },
+  "upstreamSnapshot": {
+    "sources": [
+      {
+        "label": "Apple Music API by ISRC docs",
+        "url": "https://developer.apple.com/documentation/applemusicapi/get-multiple-catalog-songs-by-isrc"
+      },
+      {
+        "label": "GitHub: MusadoraKit",
+        "url": "https://github.com/rryam/MusadoraKit"
+      },
+      {
+        "label": "Provider evidence note",
+        "url": "C:/Users/koren/src/Sinq2/axolync-songmetadata-plugin/providers/apple-music-catalog-isrc/README.md"
+      }
+    ],
+    "signals": [
+      "Apple explicitly documents filter[isrc] on catalog songs.",
+      "The response includes durationInMillis, so the metadata itself is exactly what SongMetadata stage 1 needs.",
+      "Apple warns that one ISRC may resolve to multiple songs, so this lane is strong but not completely self-arbitrating."
+    ]
+  },
+  "licensing": {
+    "summary": {
+      "status": "service-gated",
+      "display": "Apple service terms",
+      "notes": [
+        "The adapter depends on Apple Music API access and the associated Apple developer-program terms."
+      ]
+    },
+    "entries": [
+      {
+        "subject": "Apple Music API by ISRC",
+        "status": "service-gated",
+        "evidence": [
+          {
+            "label": "Apple Music API by ISRC docs",
+            "url": "https://developer.apple.com/documentation/applemusicapi/get-multiple-catalog-songs-by-isrc"
+          }
+        ],
+        "notes": [
+          "This is an official Apple hosted API path, but it requires Apple developer-token setup."
+        ]
+      },
+      {
+        "subject": "rryam/MusadoraKit",
+        "status": "permissive-oss",
+        "licenseExpression": "MIT",
+        "evidence": [
+          {
+            "label": "GitHub: MusadoraKit",
+            "url": "https://github.com/rryam/MusadoraKit"
+          }
+        ],
+        "notes": [
+          "Open-source ecosystem proof exists for Apple Music catalog integration, even though the real authority stays with Apple's service."
+        ]
+      }
+    ]
+  },
+  "maintainability": {
+    "rating": "medium",
+    "notes": [
+      "The metadata shape is strong, but the auth story and multi-result ISRC arbitration add real policy work.",
+      "This candidate becomes more valuable as provider-affine accepted matches preserve ISRC consistently."
+    ]
+  },
+  "methods": [
+    { "id": "local-js-webview", "fit": "YELLOW", "notes": "Still possible, but auth + multi-result handling keep this less clean than a host-owned implementation." },
+    { "id": "wasm-port-packaging", "fit": "BLACK", "notes": "There is no engine to port." },
+    { "id": "webview-native-bridge", "fit": "DARK GREEN", "notes": "A native wrapper can own Apple auth while returning only normalized duration results upward." },
+    { "id": "browser-extension", "fit": "DARK RED", "notes": "Adds little value beyond making the auth story awkward in another place." },
+    { "id": "userscript", "fit": "BLACK", "notes": "Too brittle for an authenticated Apple metadata flow." },
+    { "id": "desktop-companion", "fit": "YELLOW", "notes": "Possible, but heavier than a shared host or native bridge." },
+    { "id": "shared-python-host", "fit": "YELLOW", "notes": "Technically fine, but Node or a native bridge are cleaner first choices." },
+    { "id": "shared-node-host", "fit": "DARK GREEN", "notes": "Strong path for central token ownership and result arbitration when ISRC returns multiple songs." },
+    { "id": "cli-wrapper", "fit": "RED", "notes": "A CLI shell is possible but not attractive for a multi-result metadata API." },
+    { "id": "ffi-native-host", "fit": "RED", "notes": "Less direct than the stronger host/bridge stories." },
+    { "id": "forced-conversion-local-js", "fit": "BLACK", "notes": "Not a conversion problem." },
+    { "id": "remote-shared-service", "fit": "DARK GREEN", "notes": "A remote broker can own tokens and resolve multi-result ISRC responses centrally." },
+    { "id": "cloud-microservice", "fit": "YELLOW", "notes": "Viable, but operationally heavier than the problem requires today." },
+    { "id": "platform-sdk-direct", "fit": "DARK GREEN", "notes": "Strong when Axolync later wants Apple-native adapter ownership." }
+  ],
+  "recommendation": {
+    "rankedMethodIds": [
+      "shared-node-host",
+      "remote-shared-service",
+      "webview-native-bridge"
+    ],
+    "notes": [
+      "This is the best Apple fallback once direct Apple song ids are absent but ISRC is preserved.",
+      "It should stay below direct Apple catalog-id lookup when both are available."
+    ]
+  },
+  "openQuestions": [
+    "How often will accepted SongSense matches actually preserve ISRC in a trustworthy normalized field?",
+    "Should Apple ISRC responses be allowed to compete internally, or should SongMetadata require a single unambiguous match before accepting duration?"
+  ]
+}

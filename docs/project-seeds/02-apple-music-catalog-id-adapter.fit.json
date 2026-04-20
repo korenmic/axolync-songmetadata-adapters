@@ -1,0 +1,122 @@
+{
+  "adapterId": "apple-music-catalog-id",
+  "controllerType": "SongMetadata",
+  "label": "Apple Music Catalog by ID",
+  "priority": "P1",
+  "researchStatus": "researched",
+  "summary": [
+    "Apple's official catalog song endpoints expose durationInMillis directly, which makes this a high-trust SongMetadata duration enricher when the accepted match already preserves Apple song identity.",
+    "Unlike public iTunes lookup, this path avoids broad search ambiguity and should become the stronger Apple-backed lane once Axolync can own Apple credentials honestly.",
+    "The real cost is operational and architectural rather than conceptual: developer-token handling and runtime placement dominate the implementation decision."
+  ],
+  "candidateClass": {
+    "primary": "authenticated catalog metadata adapter",
+    "traits": [
+      "apple-backed",
+      "high-trust duration",
+      "requires developer token",
+      "identifier-first"
+    ]
+  },
+  "upstreamSnapshot": {
+    "sources": [
+      {
+        "label": "Apple Music API Songs docs",
+        "url": "https://developer.apple.com/documentation/applemusicapi/songs-api"
+      },
+      {
+        "label": "GitHub: MusadoraKit",
+        "url": "https://github.com/rryam/MusadoraKit"
+      },
+      {
+        "label": "GitHub: Apple MusicKit example",
+        "url": "https://github.com/KoleMyers/apple-musickit-example"
+      },
+      {
+        "label": "Provider evidence note",
+        "url": "C:/Users/koren/src/Sinq2/axolync-songmetadata-plugin/providers/apple-music-catalog-id/README.md"
+      }
+    ],
+    "signals": [
+      "Apple's official catalog song APIs expose durationInMillis directly.",
+      "Real GitHub integrations exist around MusicKit / Apple Music API flows, proving this is an honest implementation family rather than a hypothetical path.",
+      "This lane is quality-first but auth-heavy, so its real fit depends on whether Axolync wants host-brokered tokens or a native Apple bridge."
+    ]
+  },
+  "licensing": {
+    "summary": {
+      "status": "service-gated",
+      "display": "Apple service terms",
+      "notes": [
+        "The decisive dependency is Apple's hosted catalog API and developer-program terms, even when community wrappers are used."
+      ]
+    },
+    "entries": [
+      {
+        "subject": "Apple Music API Songs",
+        "status": "service-gated",
+        "evidence": [
+          {
+            "label": "Apple Music API Songs docs",
+            "url": "https://developer.apple.com/documentation/applemusicapi/songs-api"
+          }
+        ],
+        "notes": [
+          "The adapter depends on Apple Music API access and the associated Apple developer and MusicKit requirements."
+        ]
+      },
+      {
+        "subject": "rryam/MusadoraKit",
+        "status": "permissive-oss",
+        "licenseExpression": "MIT",
+        "evidence": [
+          {
+            "label": "GitHub: MusadoraKit",
+            "url": "https://github.com/rryam/MusadoraKit"
+          }
+        ],
+        "notes": [
+          "Community SDK evidence shows this catalog path is implementable through open-source tooling even though the real authority stays with Apple's service."
+        ]
+      }
+    ]
+  },
+  "maintainability": {
+    "rating": "medium",
+    "notes": [
+      "The API semantics are strong and stable compared with scrape-style alternatives.",
+      "Credential handling, token refresh, and runtime placement are the real long-term maintenance cost."
+    ]
+  },
+  "methods": [
+    { "id": "local-js-webview", "fit": "YELLOW", "notes": "Feasible with browser-capable auth flows, but token handling and Apple configuration make this less clean than public lookup or a host-owned token lane." },
+    { "id": "wasm-port-packaging", "fit": "BLACK", "notes": "There is no engine to port; the problem is auth and HTTP orchestration." },
+    { "id": "webview-native-bridge", "fit": "DARK GREEN", "notes": "A native wrapper can own Apple platform credentials while exposing only the normalized SongMetadata result upward." },
+    { "id": "browser-extension", "fit": "DARK RED", "notes": "Possible but awkward, and still leaves Apple token handling as the real burden." },
+    { "id": "userscript", "fit": "BLACK", "notes": "Too brittle for an authenticated Apple metadata lane." },
+    { "id": "desktop-companion", "fit": "YELLOW", "notes": "A companion could own credentials, but it is still heavier than a shared host or native bridge." },
+    { "id": "shared-python-host", "fit": "YELLOW", "notes": "Python can broker the HTTP calls, but there is no particular advantage over Node here." },
+    { "id": "shared-node-host", "fit": "DARK GREEN", "notes": "Clean server-side token ownership and straightforward HTTP make this one of the strongest implementation shapes." },
+    { "id": "cli-wrapper", "fit": "RED", "notes": "A CLI layer is possible, but weaker than a long-lived host that can cache and reuse tokens." },
+    { "id": "ffi-native-host", "fit": "RED", "notes": "Possible, but usually less direct than using a host runtime or real platform bridge." },
+    { "id": "forced-conversion-local-js", "fit": "BLACK", "notes": "There is nothing to convert; the hard part is the auth story." },
+    { "id": "remote-shared-service", "fit": "DARK GREEN", "notes": "A shared service is an honest way to centralize Apple credentials and cache catalog responses." },
+    { "id": "cloud-microservice", "fit": "YELLOW", "notes": "Feasible, but more operationally expensive than a local shared host for current Axolync scope." },
+    { "id": "platform-sdk-direct", "fit": "DARK GREEN", "notes": "Apple-native SDK paths are real here, especially if Axolync eventually leans into native wrapper lanes." }
+  ],
+  "recommendation": {
+    "rankedMethodIds": [
+      "shared-node-host",
+      "webview-native-bridge",
+      "platform-sdk-direct"
+    ],
+    "notes": [
+      "This is a very strong Apple-backed duration enricher once the platform is ready to own Apple credentials honestly.",
+      "It should outrank public iTunes search/lookup when the accepted match already preserves Apple song identity."
+    ]
+  },
+  "openQuestions": [
+    "Will accepted SongSense matches preserve Apple song ids directly enough to justify this as a first implemented Apple adapter rather than a later hardening lane?",
+    "Should Axolync prefer a server/host token broker or a wrapper-native Apple Music lane first?"
+  ]
+}

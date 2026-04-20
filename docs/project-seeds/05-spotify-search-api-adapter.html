@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Spotify Search API Adapter</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; margin: 24px; color: #e6edf7; background: #121722; }
+    main { max-width: 1100px; margin: 0 auto; }
+    section { margin: 0 0 24px; padding: 18px 20px; border: 1px solid #2a3448; border-radius: 16px; background: #182133; }
+    h1, h2, h3 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #2a3448; }
+    th { background: #22304b; }
+    code { background: #22304b; padding: 0 4px; border-radius: 6px; }
+    .sort-button { width: 100%; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+    .fit-chip { display: inline-block; min-width: 9ch; padding: 4px 8px; border-radius: 999px; font-weight: 600; }
+    .fit-black { background: #101114; color: #f5f7fb; }
+    .fit-dark-red { background: #4b1010; color: #ffd8d8; }
+    .fit-red { background: #7b1e1e; color: #ffe8e8; }
+    .fit-yellow { background: #7f6413; color: #fff7d1; }
+    .fit-dark-green { background: #1e5f3a; color: #ddffe9; }
+    .fit-bright-green { background: #1aa152; color: #f3fff8; }
+  </style>
+</head>
+<body>
+  <main>
+    <section>
+      <h1>Spotify Search API Adapter</h1>
+      <p>Spotify search is a legitimate SongMetadata fallback because the official endpoint supports structured filters including artist, track, and isrc.</p><p>It is still clearly weaker than direct Spotify track-id lookup because search ambiguity now becomes part of the adapter's correctness burden.</p><p>So this row should remain visible as a real candidate, but it should sit below direct-id enrichment in both product trust and implementation order.</p>
+      <p><strong>Priority:</strong> <code>P2</code></p>
+      <p><strong>Research status:</strong> <code>researched</code></p>
+    </section>
+    <section>
+      <h2>Candidate Class</h2>
+      <p><strong>Primary class:</strong> <code>authenticated search metadata adapter</code></p>
+      <ul><li>spotify-backed</li><li>search-based</li><li>duration-capable</li><li>requires auth</li></ul>
+    </section>
+    <section>
+      <h2>Upstream Snapshot</h2>
+      <h3>Sources</h3>
+      <ul><li><strong>Spotify Search docs:</strong> https://developer.spotify.com/documentation/web-api/reference/search</li><li><strong>GitHub: Spotify Web API TS SDK:</strong> https://github.com/spotify/spotify-web-api-ts-sdk</li><li><strong>GitHub: spotify-web-api-node:</strong> https://github.com/thelinmichael/spotify-web-api-node</li><li><strong>Provider evidence note:</strong> C:/Users/koren/src/Sinq2/axolync-songmetadata-plugin/providers/spotify-search-api/README.md</li></ul>
+      <h3>Research Signals</h3>
+      <ul><li>Spotify search supports field filters including artist, track, and isrc.</li><li>Healthy JS SDK families exist, so implementation mechanics are not the blocker.</li><li>The real product risk is search ambiguity rather than raw API capability.</li></ul>
+    </section>
+    <section>
+      <h2>Integration Method Fit Matrix</h2>
+      <table class="sortable-method-fit-table">
+        <thead>
+          <tr>
+            <th><button type="button" class="sort-button" data-column-index="0">Method</button></th>
+            <th><button type="button" class="sort-button" data-column-index="1">Fit</button></th>
+            <th>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        <tr class="fit-yellow">
+          <td data-sort-value="1">1. Local JS in ordinary browser/webview plugin</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>Feasible, but auth plus search-result ambiguity keep this from being a clean browser-first recommendation.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="2">2. WASM port/packaging</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>There is no engine to port.</td>
+        </tr>
+        <tr class="fit-red">
+          <td data-sort-value="3">3. Webview wrapper JS -&gt; native/plugin bridge</td>
+          <td data-sort-value="2"><span class="fit-chip fit-red">RED</span></td>
+          <td>A native bridge is unnecessary for a search-only metadata API unless it already owns credentials.</td>
+        </tr>
+        <tr class="fit-dark-red">
+          <td data-sort-value="4">4. Browser extension</td>
+          <td data-sort-value="1"><span class="fit-chip fit-dark-red">DARK RED</span></td>
+          <td>Possible, but not a natural fit for a search-auth problem.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="5">5. Userscript</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>Too brittle for an authenticated provider search lane.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="6">6. Desktop companion</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>A companion can own credentials, but a shared host is still cleaner.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="7">7. Shared Python adapter host</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>Technically fine, but Node/TypeScript still has the cleaner evidence here.</td>
+        </tr>
+        <tr class="fit-dark-green">
+          <td data-sort-value="8">8. Shared Node adapter host</td>
+          <td data-sort-value="4"><span class="fit-chip fit-dark-green">DARK GREEN</span></td>
+          <td>Best immediate fit: structured query construction, result filtering, and auth ownership all sit comfortably here.</td>
+        </tr>
+        <tr class="fit-dark-red">
+          <td data-sort-value="9">9. CLI wrapper around upstream/runtime</td>
+          <td data-sort-value="1"><span class="fit-chip fit-dark-red">DARK RED</span></td>
+          <td>Adds indirection to an already ambiguous search path.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="10">10. FFI/native library host lane</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>No native-library advantage exists here.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="11">11. Forced conversion to local JS</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>Not a conversion problem.</td>
+        </tr>
+        <tr class="fit-dark-green">
+          <td data-sort-value="12">12. Remote shared service</td>
+          <td data-sort-value="4"><span class="fit-chip fit-dark-green">DARK GREEN</span></td>
+          <td>A shared broker is a good place to centralize search-policy heuristics and caching.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="13">13. Cloud microservice per request / per tenant</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>Viable, but heavier than the current product need.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="14">14. Platform SDK direct integration</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>This is a web API search path, not a platform SDK story.</td>
+        </tr>
+        </tbody>
+      </table>
+    </section>
+    <section>
+      <h2>Maintainability Read</h2>
+      <p><strong>Machine-readable rating:</strong> <code>medium</code></p>
+      <ul><li>The API and JS ecosystem are strong.</li><li>Search-policy correctness and ambiguity handling are the real maintenance cost.</li></ul>
+    </section>
+    <section>
+      <h2>Recommendation</h2>
+      <ol><li>8. Shared Node adapter host</li><li>12. Remote shared service</li><li>1. Local JS in ordinary browser/webview plugin</li></ol>
+      <ul><li>This is a legitimate fallback only after direct Spotify id lookup is unavailable.</li><li>Keep it bounded by provider affinity and strict winner selection.</li></ul>
+    </section>
+    <section>
+      <h2>Open Questions</h2>
+      <ol><li>How much search ambiguity is acceptable before SongMetadata should refuse to enrich instead of guessing?</li><li>Should Spotify search be allowed to use ISRC filters first when that field is present, before trying artist/title text?</li></ol>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const table = document.querySelector('.sortable-method-fit-table');
+      if (!table) return;
+      const tbody = table.querySelector('tbody');
+      const buttons = table.querySelectorAll('.sort-button');
+      let activeColumn = null;
+      let ascending = true;
+      const readSortValue = (row, columnIndex) => {
+        const cell = row.children[columnIndex];
+        return cell?.dataset.sortValue ?? cell?.textContent?.trim() ?? '';
+      };
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const columnIndex = Number(button.dataset.columnIndex);
+          ascending = activeColumn === columnIndex ? !ascending : true;
+          activeColumn = columnIndex;
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+          rows.sort((left, right) => {
+            const leftValue = readSortValue(left, columnIndex);
+            const rightValue = readSortValue(right, columnIndex);
+            const numericLeft = Number(leftValue);
+            const numericRight = Number(rightValue);
+            const comparable = Number.isFinite(numericLeft) && Number.isFinite(numericRight)
+              ? numericLeft - numericRight
+              : String(leftValue).localeCompare(String(rightValue));
+            return ascending ? comparable : -comparable;
+          });
+          rows.forEach((row) => tbody.appendChild(row));
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
