@@ -1,12 +1,17 @@
 # Axolync SongMetadata Plugin
 
-Research authority and future adapter home for the `SongMetadata` lane.
+Shared lane-level home for cross-provider `SongMetadata` research that is not owned by a dedicated provider addon repo.
 
 Current scope:
 
-- track potential SongMetadata adapters that can enrich accepted song matches
-- keep research focused on product-relevant normalized fields
-- stage 1 focus is `canonicalDurationMs`
+- keep lane-level SongMetadata thinking separate from provider-specific addon repos
+- stay narrow around product-relevant normalized fields
+- avoid duplicating provider adapter authority that now lives in dedicated addon repos
 
-This repo is intentionally seed-first. It does not ship runtime adapters yet.
+Provider-specific SongMetadata adapter research has moved into:
 
+- `axolync-addon-itunes`
+- `axolync-addon-spotify`
+- `axolync-addon-musicbrainz`
+
+This repo does not ship runtime adapters yet.
