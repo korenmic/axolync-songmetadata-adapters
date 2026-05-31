@@ -1,8 +1,7 @@
 {
   "name": "axolync-songmetadata-plugin",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "SongMetadata lane research authority and future adapter home for Axolync.",
   "license": "UNLICENSED"
 }
-
