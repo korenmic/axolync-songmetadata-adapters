@@ -20,6 +20,11 @@ agent_docs = ["README.md"]
 [exports.docs]
 bootstrap = ["README.md"]
 
+[exports.tests]
+
+[exports.catalogs]
+songmetadata_providers = ["providers/catalog.json"]
+
 [[consumes.repos]]
 id = "axolync-contract"
 use = "schema-and-runtime-contracts"
