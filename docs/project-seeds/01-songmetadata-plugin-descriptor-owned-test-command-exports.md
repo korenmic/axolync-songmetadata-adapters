@@ -2,7 +2,7 @@
 
 ## Summary
 
-Remove descriptor fallback warnings for `axolync-songmetadata-plugin` by publishing build, sanity, and full-test command metadata through the repo descriptor.
+Remove descriptor fallback warnings for `axolync-songmetadata-adapters` by publishing build, sanity, and full-test command metadata through the repo descriptor.
 
 ## Product Context
 

@@ -1,5 +1,5 @@
 {
-  "name": "axolync-songmetadata-plugin",
+  "name": "axolync-songmetadata-adapters",
   "version": "0.2.0",
   "private": true,
   "description": "SongMetadata lane research authority and future adapter home for Axolync.",

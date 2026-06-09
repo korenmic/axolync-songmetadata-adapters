@@ -1,4 +1,4 @@
-# Axolync SongMetadata Plugin
+# Axolync SongMetadata Adapters
 
 Shared lane-level home for cross-provider `SongMetadata` research that is not owned by a dedicated provider addon repo.
 

@@ -1,15 +1,15 @@
 schema = "axolync.repo/v1"
 
 [repo]
-id = "axolync-songmetadata-plugin"
+id = "axolync-songmetadata-adapters"
 roles = ["consumable"]
-display_name = "Axolync SongMetadata Plugin"
+display_name = "Axolync SongMetadata Adapters"
 description = "Shared SongMetadata adapter catalog and provider migration support."
 
 [source]
-git_url = "https://github.com/korenmic/axolync-songmetadata-plugin.git"
+git_url = "https://github.com/korenmic/axolync-songmetadata-adapters.git"
 default_ref = "master"
-local_dev_path_hint = "../axolync-songmetadata-plugin"
+local_dev_path_hint = "../axolync-songmetadata-adapters"
 
 [bootstrap]
 install_mode = "managed-clone"
