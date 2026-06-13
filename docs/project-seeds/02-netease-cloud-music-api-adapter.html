@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>NetEase Cloud Music API Adapter</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; margin: 24px; color: #e6edf7; background: #121722; }
+    main { max-width: 1100px; margin: 0 auto; }
+    section { margin: 0 0 24px; padding: 18px 20px; border: 1px solid #2a3448; border-radius: 16px; background: #182133; }
+    h1, h2, h3 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #2a3448; }
+    th { background: #22304b; }
+    code { background: #22304b; padding: 0 4px; border-radius: 6px; }
+    .sort-button { width: 100%; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+    .fit-chip { display: inline-block; min-width: 9ch; padding: 4px 8px; border-radius: 999px; font-weight: 600; }
+    .fit-black { background: #101114; color: #f5f7fb; }
+    .fit-dark-red { background: #4b1010; color: #ffd8d8; }
+    .fit-red { background: #7b1e1e; color: #ffe8e8; }
+    .fit-yellow { background: #7f6413; color: #fff7d1; }
+    .fit-dark-green { background: #1e5f3a; color: #ddffe9; }
+    .fit-bright-green { background: #1aa152; color: #f3fff8; }
+  </style>
+</head>
+<body>
+  <main>
+    <section>
+      <h1>NetEase Cloud Music API Adapter</h1>
+      <p>NetEase Cloud Music API wrappers are a strong SongMetadata candidate for Asian catalog enrichment because they expose search, song detail, album, artist, playlist, and NetEase provider IDs.</p><p>The best current upstream is NeteaseCloudMusicApiEnhanced, a maintained MIT revival of the original large Node API wrapper after the original Binaryify GitHub repository was archived.</p><p>This row should be used as a provider-specific metadata authority candidate, especially when NetEase SongSense returns only IDs or partial metadata that need enrichment.</p>
+      <p><strong>Priority:</strong> <code>P1</code></p>
+      <p><strong>Research status:</strong> <code>researched</code></p>
+    </section>
+    <section>
+      <h2>Candidate Class</h2>
+      <p><strong>Primary class:</strong> <code>unofficial hosted metadata API wrapper</code></p>
+      <ul><li>netEase-provider</li><li>metadata-enrichment</li><li>search-capable</li><li>network-bound</li><li>unofficial-api</li></ul>
+    </section>
+    <section>
+      <h2>Upstream Snapshot</h2>
+      <h3>Sources</h3>
+      <ul><li><strong>NeteaseCloudMusicApiEnhanced api-enhanced:</strong> https://github.com/NeteaseCloudMusicApiEnhanced/api-enhanced</li><li><strong>NeteaseCloudMusicApiEnhanced docs:</strong> https://docs-neteasecloudmusicapi.focalors.ltd/</li><li><strong>Binaryify NeteaseCloudMusicApi archive:</strong> https://github.com/Binaryify/NeteaseCloudMusicApi</li><li><strong>simple-netease-cloud-music:</strong> https://github.com/surmon-china/simple-netease-cloud-music</li><li><strong>chaunsin netease-cloud-music:</strong> https://github.com/chaunsin/netease-cloud-music</li><li><strong>netease-qq-music-api crate:</strong> https://crates.io/crates/netease-qq-music-api</li></ul>
+      <h3>Research Signals</h3>
+      <ul><li>NeteaseCloudMusicApiEnhanced is active, MIT-licensed, and describes itself as a broad NetEase Cloud Music Node.js API service.</li><li>The original Binaryify GitHub repository is archived, but points readers to the package and external continuation context.</li><li>simple-netease-cloud-music documents search, playlist, picture, artist, album, lyric, URL, and song-detail calls with a lightweight Node API.</li><li>The Go and Rust wrapper evidence shows that NetEase metadata access is not limited to one JavaScript package, but Node remains the best initial Axolync fit.</li></ul>
+    </section>
+    <section>
+      <h2>Integration Method Fit Matrix</h2>
+      <table class="sortable-method-fit-table">
+        <thead>
+          <tr>
+            <th><button type="button" class="sort-button" data-column-index="0">Method</button></th>
+            <th><button type="button" class="sort-button" data-column-index="1">Fit</button></th>
+            <th>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        <tr class="fit-yellow">
+          <td data-sort-value="1">1. Local JS in ordinary browser/webview plugin</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>JS wrappers exist, but direct browser use may hit CORS and provider request-shape constraints.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="2">2. WASM port/packaging</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>This is metadata HTTP/API work, not an engine to port.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="3">3. Webview wrapper JS -&gt; native/plugin bridge</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>A native bridge can proxy calls, but a shared host is usually simpler for metadata.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="4">4. Browser extension</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>An extension can work around browser constraints, but metadata lookup does not inherently need extension-level privileges.</td>
+        </tr>
+        <tr class="fit-red">
+          <td data-sort-value="5">5. Userscript</td>
+          <td data-sort-value="2"><span class="fit-chip fit-red">RED</span></td>
+          <td>Userscript access would be fragile and not a good long-term metadata authority.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="6">6. Desktop companion</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>A desktop helper could own a local Node or Go wrapper, but deployment overhead is higher than a shared host.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="7">7. Shared Python adapter host</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>Python could wrap the HTTP API, but the strongest maintained upstream is Node.</td>
+        </tr>
+        <tr class="fit-bright-green">
+          <td data-sort-value="8">8. Shared Node adapter host</td>
+          <td data-sort-value="5"><span class="fit-chip fit-bright-green">BRIGHT GREEN</span></td>
+          <td>Best first lane because the maintained API Enhanced wrapper is Node-oriented and broad.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="9">9. CLI wrapper around upstream/runtime</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>CLI wrapping is possible around Go/Node tools, but less clean for live metadata enrichment.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="10">10. FFI/native library host lane</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>A Rust or Go host is possible, but there is no clear advantage over Node for the first adapter.</td>
+        </tr>
+        <tr class="fit-yellow">
+          <td data-sort-value="11">11. Forced conversion to local JS</td>
+          <td data-sort-value="3"><span class="fit-chip fit-yellow">YELLOW</span></td>
+          <td>Endpoint calls are JS-adjacent, but a local rewrite would inherit service drift and browser constraints.</td>
+        </tr>
+        <tr class="fit-dark-green">
+          <td data-sort-value="12">12. Remote shared service</td>
+          <td data-sort-value="4"><span class="fit-chip fit-dark-green">DARK GREEN</span></td>
+          <td>A shared service can cache search/detail responses and isolate NetEase endpoint drift.</td>
+        </tr>
+        <tr class="fit-dark-green">
+          <td data-sort-value="13">13. Cloud microservice per request / per tenant</td>
+          <td data-sort-value="4"><span class="fit-chip fit-dark-green">DARK GREEN</span></td>
+          <td>A per-request service is plausible for metadata normalization, especially around search and detail lookups.</td>
+        </tr>
+        <tr class="fit-black">
+          <td data-sort-value="14">14. Platform SDK direct integration</td>
+          <td data-sort-value="0"><span class="fit-chip fit-black">BLACK</span></td>
+          <td>No official platform SDK route was found for NetEase metadata.</td>
+        </tr>
+        </tbody>
+      </table>
+    </section>
+    <section>
+      <h2>Maintainability Read</h2>
+      <p><strong>Machine-readable rating:</strong> <code>medium</code></p>
+      <ul><li>API Enhanced is broad and maintained, but it is still a reverse-engineered wrapper rather than an official partner contract.</li><li>SongMetadata normalization should keep NetEase IDs, aliases, translated names, album art, duration, and provider provenance explicit.</li><li>A host-owned integration avoids browser CORS and lets Axolync centralize search normalization, caching, and rate-limit handling.</li></ul>
+    </section>
+    <section>
+      <h2>Recommendation</h2>
+      <ol><li>8. Shared Node adapter host</li><li>12. Remote shared service</li><li>13. Cloud microservice per request / per tenant</li></ol>
+      <ul><li>Use NeteaseCloudMusicApiEnhanced as the primary proof source.</li><li>Keep the SongMetadata row focused on provider ID enrichment and normalized metadata, not playback or download behavior.</li></ul>
+    </section>
+    <section>
+      <h2>Open Questions</h2>
+      <ol><li>Should NetEase SongMetadata be an observer-style enrichment adapter or only run when NetEase provider IDs are already present?</li><li>Which NetEase fields should be normalized into the shared SongMetadata contract versus preserved as provider-specific extras?</li></ol>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const table = document.querySelector('.sortable-method-fit-table');
+      if (!table) return;
+      const tbody = table.querySelector('tbody');
+      const buttons = table.querySelectorAll('.sort-button');
+      let activeColumn = null;
+      let ascending = true;
+      const readSortValue = (row, columnIndex) => {
+        const cell = row.children[columnIndex];
+        return cell?.dataset.sortValue ?? cell?.textContent?.trim() ?? '';
+      };
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const columnIndex = Number(button.dataset.columnIndex);
+          ascending = activeColumn === columnIndex ? !ascending : true;
+          activeColumn = columnIndex;
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+          rows.sort((left, right) => {
+            const leftValue = readSortValue(left, columnIndex);
+            const rightValue = readSortValue(right, columnIndex);
+            const numericLeft = Number(leftValue);
+            const numericRight = Number(rightValue);
+            const comparable = Number.isFinite(numericLeft) && Number.isFinite(numericRight)
+              ? numericLeft - numericRight
+              : String(leftValue).localeCompare(String(rightValue));
+            return ascending ? comparable : -comparable;
+          });
+          rows.forEach((row) => tbody.appendChild(row));
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+{
+  "adapterId": "netease-cloud-music-api",
+  "controllerType": "SongMetadata",
+  "label": "NetEase Cloud Music API",
+  "priority": "P1",
+  "researchStatus": "researched",
+  "summary": [
+    "NetEase Cloud Music API wrappers are a strong SongMetadata candidate for Asian catalog enrichment because they expose search, song detail, album, artist, playlist, and NetEase provider IDs.",
+    "The best current upstream is NeteaseCloudMusicApiEnhanced, a maintained MIT revival of the original large Node API wrapper after the original Binaryify GitHub repository was archived.",
+    "This row should be used as a provider-specific metadata authority candidate, especially when NetEase SongSense returns only IDs or partial metadata that need enrichment."
+  ],
+  "candidateClass": {
+    "primary": "unofficial hosted metadata API wrapper",
+    "traits": [
+      "netEase-provider",
+      "metadata-enrichment",
+      "search-capable",
+      "network-bound",
+      "unofficial-api"
+    ]
+  },
+  "upstreamSnapshot": {
+    "sources": [
+      {
+        "label": "NeteaseCloudMusicApiEnhanced api-enhanced",
+        "url": "https://github.com/NeteaseCloudMusicApiEnhanced/api-enhanced"
+      },
+      {
+        "label": "NeteaseCloudMusicApiEnhanced docs",
+        "url": "https://docs-neteasecloudmusicapi.focalors.ltd/"
+      },
+      {
+        "label": "Binaryify NeteaseCloudMusicApi archive",
+        "url": "https://github.com/Binaryify/NeteaseCloudMusicApi"
+      },
+      {
+        "label": "simple-netease-cloud-music",
+        "url": "https://github.com/surmon-china/simple-netease-cloud-music"
+      },
+      {
+        "label": "chaunsin netease-cloud-music",
+        "url": "https://github.com/chaunsin/netease-cloud-music"
+      },
+      {
+        "label": "netease-qq-music-api crate",
+        "url": "https://crates.io/crates/netease-qq-music-api"
+      }
+    ],
+    "signals": [
+      "NeteaseCloudMusicApiEnhanced is active, MIT-licensed, and describes itself as a broad NetEase Cloud Music Node.js API service.",
+      "The original Binaryify GitHub repository is archived, but points readers to the package and external continuation context.",
+      "simple-netease-cloud-music documents search, playlist, picture, artist, album, lyric, URL, and song-detail calls with a lightweight Node API.",
+      "The Go and Rust wrapper evidence shows that NetEase metadata access is not limited to one JavaScript package, but Node remains the best initial Axolync fit."
+    ]
+  },
+  "licensing": {
+    "summary": {
+      "status": "service-gated",
+      "display": "Unofficial NetEase service + MIT wrappers",
+      "notes": [
+        "Most relevant wrappers are permissive OSS, but the metadata itself comes from NetEase-hosted services without an Axolync-owned formal API contract."
+      ]
+    },
+    "entries": [
+      {
+        "subject": "NeteaseCloudMusicApiEnhanced api-enhanced",
+        "status": "permissive-oss",
+        "licenseExpression": "MIT",
+        "evidence": [
+          {
+            "label": "api-enhanced repository",
+            "url": "https://github.com/NeteaseCloudMusicApiEnhanced/api-enhanced"
+          },
+          {
+            "label": "api-enhanced npm package",
+            "url": "https://www.npmjs.com/package/@neteasecloudmusicapienhanced/api"
+          }
+        ],
+        "notes": [
+          "Primary recommended wrapper because it is maintained and broad."
+        ]
+      },
+      {
+        "subject": "simple-netease-cloud-music",
+        "status": "permissive-oss",
+        "licenseExpression": "MIT",
+        "evidence": [
+          {
+            "label": "simple-netease-cloud-music repository",
+            "url": "https://github.com/surmon-china/simple-netease-cloud-music"
+          }
+        ],
+        "notes": [
+          "Lightweight but archived; useful as fallback design evidence."
+        ]
+      },
+      {
+        "subject": "chaunsin netease-cloud-music",
+        "status": "permissive-oss",
+        "licenseExpression": "MIT",
+        "evidence": [
+          {
+            "label": "chaunsin repository",
+            "url": "https://github.com/chaunsin/netease-cloud-music"
+          }
+        ],
+        "notes": [
+          "Go API and CLI evidence; more suitable for a host service than browser-local code."
+        ]
+      },
+      {
+        "subject": "NetEase Cloud Music metadata service",
+        "status": "service-gated",
+        "evidence": [
+          {
+            "label": "NetEaseCloudMusicApiEnhanced docs",
+            "url": "https://docs-neteasecloudmusicapi.focalors.ltd/"
+          }
+        ],
+        "notes": [
+          "Provider terms and endpoint stability remain external risks."
+        ]
+      }
+    ]
+  },
+  "maintainability": {
+    "rating": "medium",
+    "notes": [
+      "API Enhanced is broad and maintained, but it is still a reverse-engineered wrapper rather than an official partner contract.",
+      "SongMetadata normalization should keep NetEase IDs, aliases, translated names, album art, duration, and provider provenance explicit.",
+      "A host-owned integration avoids browser CORS and lets Axolync centralize search normalization, caching, and rate-limit handling."
+    ]
+  },
+  "methods": [
+    {
+      "id": "local-js-webview",
+      "fit": "YELLOW",
+      "notes": "JS wrappers exist, but direct browser use may hit CORS and provider request-shape constraints."
+    },
+    {
+      "id": "wasm-port-packaging",
+      "fit": "BLACK",
+      "notes": "This is metadata HTTP/API work, not an engine to port."
+    },
+    {
+      "id": "webview-native-bridge",
+      "fit": "YELLOW",
+      "notes": "A native bridge can proxy calls, but a shared host is usually simpler for metadata."
+    },
+    {
+      "id": "browser-extension",
+      "fit": "YELLOW",
+      "notes": "An extension can work around browser constraints, but metadata lookup does not inherently need extension-level privileges."
+    },
+    {
+      "id": "userscript",
+      "fit": "RED",
+      "notes": "Userscript access would be fragile and not a good long-term metadata authority."
+    },
+    {
+      "id": "desktop-companion",
+      "fit": "YELLOW",
+      "notes": "A desktop helper could own a local Node or Go wrapper, but deployment overhead is higher than a shared host."
+    },
+    {
+      "id": "shared-python-host",
+      "fit": "YELLOW",
+      "notes": "Python could wrap the HTTP API, but the strongest maintained upstream is Node."
+    },
+    {
+      "id": "shared-node-host",
+      "fit": "BRIGHT GREEN",
+      "notes": "Best first lane because the maintained API Enhanced wrapper is Node-oriented and broad."
+    },
+    {
+      "id": "cli-wrapper",
+      "fit": "YELLOW",
+      "notes": "CLI wrapping is possible around Go/Node tools, but less clean for live metadata enrichment."
+    },
+    {
+      "id": "ffi-native-host",
+      "fit": "YELLOW",
+      "notes": "A Rust or Go host is possible, but there is no clear advantage over Node for the first adapter."
+    },
+    {
+      "id": "forced-conversion-local-js",
+      "fit": "YELLOW",
+      "notes": "Endpoint calls are JS-adjacent, but a local rewrite would inherit service drift and browser constraints."
+    },
+    {
+      "id": "remote-shared-service",
+      "fit": "DARK GREEN",
+      "notes": "A shared service can cache search/detail responses and isolate NetEase endpoint drift."
+    },
+    {
+      "id": "cloud-microservice",
+      "fit": "DARK GREEN",
+      "notes": "A per-request service is plausible for metadata normalization, especially around search and detail lookups."
+    },
+    {
+      "id": "platform-sdk-direct",
+      "fit": "BLACK",
+      "notes": "No official platform SDK route was found for NetEase metadata."
+    }
+  ],
+  "recommendation": {
+    "rankedMethodIds": [
+      "shared-node-host",
+      "remote-shared-service",
+      "cloud-microservice"
+    ],
+    "notes": [
+      "Use NeteaseCloudMusicApiEnhanced as the primary proof source.",
+      "Keep the SongMetadata row focused on provider ID enrichment and normalized metadata, not playback or download behavior."
+    ]
+  },
+  "openQuestions": [
+    "Should NetEase SongMetadata be an observer-style enrichment adapter or only run when NetEase provider IDs are already present?",
+    "Which NetEase fields should be normalized into the shared SongMetadata contract versus preserved as provider-specific extras?"
+  ]
+}

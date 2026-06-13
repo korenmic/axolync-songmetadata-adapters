@@ -1,0 +1,14 @@
+{
+  "pluginId": "songmetadata-bridge",
+  "adapters": [
+    {
+      "id": "netease-cloud-music-api",
+      "label": "NetEase Cloud Music API",
+      "runtimeCodeState": "none",
+      "shippableInRelease": false,
+      "shippableInDebug": false,
+      "hiddenInUi": false,
+      "notes": "Catalog candidate for NetEase Cloud Music metadata wrappers covering search, song detail, album, artist, and provider IDs. No Axolync runtime implementation exists yet."
+    }
+  ]
+}
