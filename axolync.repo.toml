@@ -25,6 +25,11 @@ bootstrap = ["README.md"]
 [exports.catalogs]
 songmetadata_providers = ["providers/catalog.json"]
 
+[[exports.inventories]]
+name = "adapter-catalog"
+kind = "inventory"
+path = "adapter-inventory.json"
+
 [[consumes.repos]]
 id = "axolync-contract"
 use = "schema-and-runtime-contracts"
